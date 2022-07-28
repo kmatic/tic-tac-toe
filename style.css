@@ -1,0 +1,17 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+}
+
+.gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 150px);
+    grid-template-rows: repeat(3, 150px);
+}
+
+.moveSlot {
+    height: 100px;
+    width: 100px;
+    background-color: gray;
+}
