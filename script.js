@@ -8,30 +8,131 @@ const Player = (symbol) => {
 }
 
 const gameboard = (() => {
-    const board = ['x', 'o', 'x', 'o', 'o', 'o', 'x', 'x', 'x'];
+    const board = Array(9).fill('');
     const playerX = Player('X');
-    const playerO = Player('O'); 
+    const playerO = Player('O');
+    const xMoves = [];
+    const oMoves = []; 
+    let round = 1;
+    let gameOver = false;
+
     const setSlot = (index, symbol) => {
         board[index] = symbol;
-    }
+    };
+
     const getSlot = (index) => {
         return board[index];
-    }
+    };
+
+    const getGameOver = () => {
+        return gameOver;
+    };
+
+    const playRound = (index) => {
+        const currentSymbol = getCurrentSymbol();
+        setSlot(index, currentSymbol);
+        currentSymbol === 'X' ? xMoves.push(index) : oMoves.push(index);
+        if (checkWin() === currentSymbol) {
+            gameOver = true;
+            displayController.updateMsg(currentSymbol);
+            return;
+        }
+        if (round === 9) {
+            gameOver = true;
+            displayController.updateMsg('draw');
+            return;
+        }
+        round++;
+        displayController.updateMsg(currentSymbol);
+    };
+
+    const getCurrentSymbol = () => {
+        return (round % 2 === 1 ? playerX.getSymbol() : playerO.getSymbol());
+    };
+
+    const reset = () => {
+        round = 1;
+        gameOver = false;
+        xMoves.length = 0;
+        oMoves.length = 0;
+        for (let i = 0; i < board.length; i++) {
+            board[i] = '';
+        }
+    };
+
+    const checkWin = () => {
+        const winStates = [
+            [0, 1 ,2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+        winStates.forEach(winState => {
+            const xWins = winState.every(state => xMoves.includes(state));
+            const oWins = winState.every(state => oMoves.includes(state));
+            if (xWins) {
+                return 'X';
+            } else if (oWins) {
+                return 'O';
+            } else {
+                return false;
+            }
+        });
+    };
+
     return {
-        setSlot,
         getSlot,
+        playRound,
+        reset,
+        getGameOver,
+        getCurrentSymbol,
     };
 })();
 
 const displayController = (() => {
     const moveSlot = document.querySelectorAll('.moveSlot');
-    // const render = () => {
-    //     moveSlot.forEach(function(element, index) {
-    //         element.textContent = gameboard.board[index];
-    //     });
-    // };
-    return {
+    const resetBtn = document.querySelector('#restart');
+    const gameMsg = document.querySelector('#gameStatus');
 
+    moveSlot.forEach(slot => {
+        slot.addEventListener('click', () => {
+            if (slot.textContent !== '' || gameboard.getGameOver()) {
+                return;
+            }
+            gameboard.playRound(parseInt(slot.dataset.index));
+            updateDisplay(slot.dataset.index);
+        });
+    });
+
+    resetBtn.addEventListener('click', () => {
+        gameboard.reset();
+        moveSlot.forEach(slot => {
+            updateDisplay(slot.dataset.index);
+        });
+    })
+
+    const updateDisplay = ((index) => {
+        moveSlot[index].textContent = gameboard.getSlot(index);
+    });
+
+    const updateMsg = ((player) => {
+        if (player == 'draw') {
+            gameMsg.textContent = 'The game is a draw!';
+        }
+        else if (player == 'X' || player == 'O') {
+            gameMsg.textContent = `It's Player ${player}'s turn!`;
+        }
+        else if ((player == 'X' && gameboard.getGameOver()) || (player == 'O' && gameboard.getGameOver())) {
+            gameMsg.textContent = `Player ${player} has won the game!`;
+        }
+    })
+
+    return {
+        updateMsg,
     };
 })();
 

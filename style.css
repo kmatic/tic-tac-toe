@@ -49,6 +49,11 @@ footer {
     border-radius: var(--border-rad);
     border: 2px solid lightgray;
     transition: transform 0.2s;
+    font-size: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
 }
 
 .fa-github {
@@ -76,4 +81,9 @@ footer {
     transform: scale(1.05);
     filter: brightness(90%);
     box-shadow: 0px 0px 8px lightgray;
+}
+
+#gameStatus {
+    font-size: 2rem;
+    padding-top: 30px;
 }
