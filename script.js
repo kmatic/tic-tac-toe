@@ -1,24 +1,37 @@
-const Player = () => {
-
+const Player = (symbol) => {
+    const getSymbol = () => {
+        return symbol;
+    }
+    return {
+        getSymbol,
+    }
 }
 
-const gameBoard = (() => {
+const gameboard = (() => {
     const board = ['x', 'o', 'x', 'o', 'o', 'o', 'x', 'x', 'x'];
+    const playerX = Player('X');
+    const playerO = Player('O'); 
+    const setSlot = (index, symbol) => {
+        board[index] = symbol;
+    }
+    const getSlot = (index) => {
+        return board[index];
+    }
     return {
-        board,
+        setSlot,
+        getSlot,
     };
 })();
 
 const displayController = (() => {
-    const render = () => {
-        const moveSlot = document.querySelectorAll('.moveSlot');
-        moveSlot.forEach(function(element, index) {
-            element.textContent = gameBoard.board[index];
-        });
-    };
+    const moveSlot = document.querySelectorAll('.moveSlot');
+    // const render = () => {
+    //     moveSlot.forEach(function(element, index) {
+    //         element.textContent = gameboard.board[index];
+    //     });
+    // };
     return {
-        render,
+
     };
 })();
 
-displayController.render();
