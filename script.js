@@ -29,12 +29,11 @@ const gameboard = (() => {
     };
 
     const playRound = (index) => {
-        const currentSymbol = getCurrentSymbol();
-        setSlot(index, currentSymbol);
-        currentSymbol === 'X' ? xMoves.push(index) : oMoves.push(index);
-        if (checkWin() === currentSymbol) {
-            gameOver = true;
-            displayController.updateMsg(currentSymbol);
+        setSlot(index, getCurrentSymbol());
+        getCurrentSymbol() === 'X' ? xMoves.push(index) : oMoves.push(index);
+        checkWin();
+        if (gameOver) {
+            displayController.updateMsg(getCurrentSymbol());
             return;
         }
         if (round === 9) {
@@ -43,7 +42,7 @@ const gameboard = (() => {
             return;
         }
         round++;
-        displayController.updateMsg(currentSymbol);
+        displayController.updateMsg(getCurrentSymbol());
     };
 
     const getCurrentSymbol = () => {
@@ -55,6 +54,7 @@ const gameboard = (() => {
         gameOver = false;
         xMoves.length = 0;
         oMoves.length = 0;
+        displayController.updateMsg(getCurrentSymbol());
         for (let i = 0; i < board.length; i++) {
             board[i] = '';
         }
@@ -74,12 +74,8 @@ const gameboard = (() => {
         winStates.forEach(winState => {
             const xWins = winState.every(state => xMoves.includes(state));
             const oWins = winState.every(state => oMoves.includes(state));
-            if (xWins) {
-                return 'X';
-            } else if (oWins) {
-                return 'O';
-            } else {
-                return false;
+            if (xWins || oWins) {
+                gameOver = true;
             }
         });
     };
@@ -89,7 +85,6 @@ const gameboard = (() => {
         playRound,
         reset,
         getGameOver,
-        getCurrentSymbol,
     };
 })();
 
@@ -123,11 +118,11 @@ const displayController = (() => {
         if (player == 'draw') {
             gameMsg.textContent = 'The game is a draw!';
         }
-        else if (player == 'X' || player == 'O') {
-            gameMsg.textContent = `It's Player ${player}'s turn!`;
-        }
         else if ((player == 'X' && gameboard.getGameOver()) || (player == 'O' && gameboard.getGameOver())) {
             gameMsg.textContent = `Player ${player} has won the game!`;
+        }
+        else if (player == 'X' || player == 'O') {
+            gameMsg.textContent = `It's Player ${player}'s turn!`;
         }
     })
 
